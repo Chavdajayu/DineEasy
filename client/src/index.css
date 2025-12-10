@@ -2,51 +2,55 @@
 @tailwind components;
 @tailwind utilities;
 
-/* LIGHT MODE */
+/* LIGHT MODE - Using dark theme as default for restaurant app */
 :root {
-  --button-outline: rgba(0,0,0, .10);
-  --badge-outline: rgba(0,0,0, .05);
-  --opaque-button-border-intensity: -8;
-  --elevate-1: rgba(0,0,0, .03);
-  --elevate-2: rgba(0,0,0, .08);
-  --background: 0 0% 98%;
-  --foreground: 0 0% 10%;
-  --border: 0 0% 90%;
-  --card: 0 0% 96%;
-  --card-foreground: 0 0% 10%;
-  --card-border: 0 0% 92%;
-  --sidebar: 0 0% 94%;
-  --sidebar-foreground: 0 0% 10%;
-  --sidebar-border: 0 0% 88%;
-  --sidebar-primary: 18 100% 60%;
+  --button-outline: rgba(255,255,255, .10);
+  --badge-outline: rgba(255,255,255, .05);
+  --opaque-button-border-intensity: 9;
+  --elevate-1: rgba(255,255,255, .04);
+  --elevate-2: rgba(255,255,255, .09);
+  --background: 0 0% 7%;
+  --foreground: 0 0% 88%;
+  --border: 0 0% 14%;
+  --card: 0 0% 12%;
+  --card-foreground: 0 0% 88%;
+  --card-border: 0 0% 16%;
+  --sidebar: 0 0% 10%;
+  --sidebar-foreground: 0 0% 88%;
+  --sidebar-border: 0 0% 14%;
+  --sidebar-primary: 18 90% 50%;
   --sidebar-primary-foreground: 0 0% 98%;
-  --sidebar-accent: 0 0% 88%;
-  --sidebar-accent-foreground: 0 0% 10%;
-  --sidebar-ring: 18 100% 60%;
-  --popover: 0 0% 92%;
-  --popover-foreground: 0 0% 10%;
-  --popover-border: 0 0% 86%;
-  --primary: 18 100% 60%;
+  --sidebar-accent: 0 0% 15%;
+  --sidebar-accent-foreground: 0 0% 88%;
+  --sidebar-ring: 18 90% 50%;
+  --popover: 0 0% 13%;
+  --popover-foreground: 0 0% 88%;
+  --popover-border: 0 0% 16%;
+  --primary: 18 90% 50%;
   --primary-foreground: 0 0% 98%;
-  --secondary: 0 0% 86%;
-  --secondary-foreground: 0 0% 10%;
-  --muted: 0 3% 88%;
-  --muted-foreground: 0 0% 35%;
-  --accent: 0 4% 90%;
-  --accent-foreground: 0 0% 10%;
+  --secondary: 0 0% 17%;
+  --secondary-foreground: 0 0% 88%;
+  --muted: 0 3% 16%;
+  --muted-foreground: 0 0% 62%;
+  --accent: 0 4% 15%;
+  --accent-foreground: 0 0% 88%;
   --destructive: 0 84% 45%;
   --destructive-foreground: 0 0% 98%;
-  --input: 0 0% 70%;
-  --ring: 18 100% 60%;
-  --chart-1: 18 100% 45%;
-  --chart-2: 162 100% 35%;
-  --chart-3: 45 100% 40%;
-  --chart-4: 270 60% 45%;
-  --chart-5: 200 80% 40%;
-  --font-sans: Open Sans, sans-serif;
+  --success: 162 95% 43%;
+  --success-foreground: 0 0% 98%;
+  --warning: 45 96% 54%;
+  --warning-foreground: 0 0% 10%;
+  --input: 0 0% 20%;
+  --ring: 18 90% 50%;
+  --chart-1: 18 100% 55%;
+  --chart-2: 162 100% 43%;
+  --chart-3: 45 100% 54%;
+  --chart-4: 270 60% 55%;
+  --chart-5: 200 80% 50%;
+  --font-sans: Poppins, Inter, system-ui, sans-serif;
   --font-serif: Georgia, serif;
   --font-mono: Menlo, monospace;
-  --radius: .5rem;
+  --radius: 1.25rem;
   --shadow-2xs: 0px 2px 0px 0px hsl(0 0% 0% / 0.00);
   --shadow-xs: 0px 2px 0px 0px hsl(0 0% 0% / 0.00);
   --shadow-sm: 0px 2px 0px 0px hsl(0 0% 0% / 0.00), 0px 1px 2px -1px hsl(0 0% 0% / 0.00);
@@ -58,7 +62,7 @@
   --tracking-normal: 0em;
   --spacing: 0.25rem;
 
-/* Fallback for older browsers */
+  /* Fallback for older browsers */
   --sidebar-primary-border: hsl(var(--sidebar-primary));
   --sidebar-primary-border: hsl(from hsl(var(--sidebar-primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
 
@@ -96,21 +100,21 @@
   --background: 0 0% 7%;
   --foreground: 0 0% 88%;
   --border: 0 0% 14%;
-  --card: 0 0% 9%;
+  --card: 0 0% 12%;
   --card-foreground: 0 0% 88%;
-  --card-border: 0 0% 12%;
-  --sidebar: 0 0% 11%;
+  --card-border: 0 0% 16%;
+  --sidebar: 0 0% 10%;
   --sidebar-foreground: 0 0% 88%;
   --sidebar-border: 0 0% 14%;
-  --sidebar-primary: 18 100% 60%;
+  --sidebar-primary: 18 90% 50%;
   --sidebar-primary-foreground: 0 0% 98%;
   --sidebar-accent: 0 0% 15%;
   --sidebar-accent-foreground: 0 0% 88%;
-  --sidebar-ring: 18 100% 60%;
+  --sidebar-ring: 18 90% 50%;
   --popover: 0 0% 13%;
   --popover-foreground: 0 0% 88%;
   --popover-border: 0 0% 16%;
-  --primary: 18 100% 60%;
+  --primary: 18 90% 50%;
   --primary-foreground: 0 0% 98%;
   --secondary: 0 0% 17%;
   --secondary-foreground: 0 0% 88%;
@@ -120,23 +124,19 @@
   --accent-foreground: 0 0% 88%;
   --destructive: 0 84% 45%;
   --destructive-foreground: 0 0% 98%;
-  --input: 0 0% 28%;
-  --ring: 18 100% 60%;
-  --chart-1: 18 100% 75%;
-  --chart-2: 162 100% 70%;
-  --chart-3: 45 100% 72%;
-  --chart-4: 270 60% 75%;
-  --chart-5: 200 80% 70%;
-  --shadow-2xs: 0px 2px 0px 0px hsl(0 0% 0% / 0.00);
-  --shadow-xs: 0px 2px 0px 0px hsl(0 0% 0% / 0.00);
-  --shadow-sm: 0px 2px 0px 0px hsl(0 0% 0% / 0.00), 0px 1px 2px -1px hsl(0 0% 0% / 0.00);
-  --shadow: 0px 2px 0px 0px hsl(0 0% 0% / 0.00), 0px 1px 2px -1px hsl(0 0% 0% / 0.00);
-  --shadow-md: 0px 2px 0px 0px hsl(0 0% 0% / 0.00), 0px 2px 4px -1px hsl(0 0% 0% / 0.00);
-  --shadow-lg: 0px 2px 0px 0px hsl(0 0% 0% / 0.00), 0px 4px 6px -1px hsl(0 0% 0% / 0.00);
-  --shadow-xl: 0px 2px 0px 0px hsl(0 0% 0% / 0.00), 0px 8px 10px -1px hsl(0 0% 0% / 0.00);
-  --shadow-2xl: 0px 2px 0px 0px hsl(0 0% 0% / 0.00);
+  --success: 162 95% 43%;
+  --success-foreground: 0 0% 98%;
+  --warning: 45 96% 54%;
+  --warning-foreground: 0 0% 10%;
+  --input: 0 0% 20%;
+  --ring: 18 90% 50%;
+  --chart-1: 18 100% 55%;
+  --chart-2: 162 100% 43%;
+  --chart-3: 45 100% 54%;
+  --chart-4: 270 60% 55%;
+  --chart-5: 200 80% 50%;
 
-/* Fallback for older browsers */
+  /* Fallback for older browsers */
   --sidebar-primary-border: hsl(var(--sidebar-primary));
   --sidebar-primary-border: hsl(from hsl(var(--sidebar-primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
 
@@ -173,30 +173,28 @@
   body {
     @apply font-sans antialiased bg-background text-foreground;
   }
+
+  /* Custom scrollbar for dark theme */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--background));
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted));
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground));
+  }
 }
 
-/**
- * Using the elevate system.
- * Automatic contrast adjustment.
- *
- * <element className="hover-elevate" />
- * <element className="active-elevate-2" />
- *
- * // Using the tailwind utility when a data attribute is "on"
- * <element className="toggle-elevate data-[state=on]:toggle-elevated" />
- * // Or manually controlling the toggle state
- * <element className="toggle-elevate toggle-elevated" />
- *
- * Elevation systems have to handle many states.
- * - not-hovered, vs. hovered vs. active  (three mutually exclusive states)
- * - toggled or not
- * - focused or not (this is not handled with these utilities)
- *
- * Even without handling focused or not, this is six possible combinations that
- * need to be distinguished from eachother visually.
- */
 @layer utilities {
-
   /* Hide ugly search cancel button in Chrome until we can style it properly */
   input[type="search"]::-webkit-search-cancel-button {
     @apply hidden;
@@ -209,13 +207,131 @@
     pointer-events: none;
   }
 
+  /* Glassmorphism utility */
+  .glass {
+    background: rgba(30, 30, 30, 0.8);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .glass-card {
+    background: rgba(30, 30, 30, 0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  /* Order status colors */
+  .status-received {
+    @apply bg-amber-500/20 text-amber-400 border-amber-500/30;
+  }
+
+  .status-preparing {
+    @apply bg-orange-500/20 text-orange-400 border-orange-500/30;
+  }
+
+  .status-cooking {
+    @apply bg-orange-600/20 text-orange-500 border-orange-600/30;
+  }
+
+  .status-ready {
+    @apply bg-emerald-500/20 text-emerald-400 border-emerald-500/30;
+  }
+
+  .status-served {
+    @apply bg-emerald-600/20 text-emerald-500 border-emerald-600/30;
+  }
+
+  /* Pulse animation for new orders */
+  @keyframes pulse-glow {
+    0%, 100% {
+      box-shadow: 0 0 0 0 rgba(255, 107, 53, 0.4);
+    }
+    50% {
+      box-shadow: 0 0 0 8px rgba(255, 107, 53, 0);
+    }
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  /* Shimmer loading effect */
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      hsl(var(--muted)) 0%,
+      hsl(var(--muted-foreground) / 0.1) 50%,
+      hsl(var(--muted)) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+
+  /* Slide in animation */
+  @keyframes slide-in-right {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  .animate-slide-in-right {
+    animation: slide-in-right 0.3s ease-out;
+  }
+
+  /* Fade in up animation */
+  @keyframes fade-in-up {
+    from {
+      transform: translateY(20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .animate-fade-in-up {
+    animation: fade-in-up 0.4s ease-out;
+  }
+
+  /* Scale in animation */
+  @keyframes scale-in {
+    from {
+      transform: scale(0.95);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  .animate-scale-in {
+    animation: scale-in 0.2s ease-out;
+  }
+
   /* .no-default-hover-elevate/no-default-active-elevate is an escape hatch so consumers of
    * buttons/badges can remove the automatic brightness adjustment on interactions
    * and program their own. */
   .no-default-hover-elevate {}
 
   .no-default-active-elevate {}
-
 
   /**
    * Toggleable backgrounds go behind the content. Hoverable/active goes on top.
@@ -229,10 +345,8 @@
     pointer-events: none;
     position: absolute;
     inset: 0px;
-    /*border-radius: inherit;   match rounded corners */
     border-radius: inherit;
     z-index: -1;
-    /* sits behind content but above backdrop */
   }
 
   .toggle-elevate.toggle-elevated::before {
@@ -261,10 +375,8 @@
     pointer-events: none;
     position: absolute;
     inset: 0px;
-    /*border-radius: inherit;   match rounded corners */
     border-radius: inherit;
     z-index: 999;
-    /* sits in front of content */
   }
 
   .hover-elevate:hover:not(.no-default-hover-elevate)::after,
