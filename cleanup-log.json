@@ -1,0 +1,107 @@
+{
+  "timestamp": "2025-12-19T13:23:40.000Z",
+  "backupDirectory": "cleanup_backup_20251219_132320",
+  "deletedItems": [
+    {
+      "path": "c:\\Users\\chvad\\OneDrive\\Desktop\\Dineyy\\Dine-Dash\\server",
+      "sizeBytes": 37962,
+      "backupPath": "cleanup_backup_20251219_132320/server"
+    },
+    {
+      "path": "c:\\Users\\chvad\\OneDrive\\Desktop\\Dineyy\\Dine-Dash\\shared",
+      "sizeBytes": 7590,
+      "backupPath": "cleanup_backup_20251219_132320/shared"
+    },
+    {
+      "path": "c:\\Users\\chvad\\OneDrive\\Desktop\\Dineyy\\Dine-Dash\\.local",
+      "sizeBytes": 301754,
+      "backupPath": "cleanup_backup_20251219_132320/.local"
+    },
+    {
+      "path": "c:\\Users\\chvad\\OneDrive\\Desktop\\Dineyy\\Dine-Dash\\start-server.js",
+      "sizeBytes": 1042,
+      "backupPath": "cleanup_backup_20251219_132320/start-server.js"
+    },
+    {
+      "path": "c:\\Users\\chvad\\OneDrive\\Desktop\\Dineyy\\Dine-Dash\\script\\build.ts",
+      "sizeBytes": 1417,
+      "backupPath": "cleanup_backup_20251219_132320/build.ts"
+    },
+    {
+      "path": "c:\\Users\\chvad\\OneDrive\\Desktop\\Dineyy\\Dine-Dash\\drizzle.config.ts",
+      "sizeBytes": 209,
+      "backupPath": "cleanup_backup_20251219_132320/drizzle.config.ts"
+    },
+    {
+      "path": "c:\\Users\\chvad\\OneDrive\\Desktop\\Dineyy\\Dine-Dash\\run-server.bat",
+      "sizeBytes": 92,
+      "backupPath": "cleanup_backup_20251219_132320/run-server.bat"
+    },
+    {
+      "path": "c:\\Users\\chvad\\OneDrive\\Desktop\\Dineyy\\Dine-Dash\\install-and-run.bat",
+      "sizeBytes": 90,
+      "backupPath": "cleanup_backup_20251219_132320/install-and-run.bat"
+    },
+    {
+      "path": "c:\\Users\\chvad\\OneDrive\\Desktop\\Dineyy\\Dine-Dash\\test-server.bat",
+      "sizeBytes": 95,
+      "backupPath": "cleanup_backup_20251219_132320/test-server.bat"
+    },
+    {
+      "path": "c:\\Users\\chvad\\OneDrive\\Desktop\\Dineyy\\Dine-Dash\\test-setup.js",
+      "sizeBytes": 1174,
+      "backupPath": "cleanup_backup_20251219_132320/test-setup.js"
+    },
+    {
+      "path": "c:\\Users\\chvad\\OneDrive\\Desktop\\Dineyy\\Dine-Dash\\verify-setup.js",
+      "sizeBytes": 2867,
+      "backupPath": "cleanup_backup_20251219_132320/verify-setup.js"
+    },
+    {
+      "path": "c:\\Users\\chvad\\OneDrive\\Desktop\\Dineyy\\Dine-Dash\\QUICK-START.md",
+      "sizeBytes": 1080,
+      "backupPath": "cleanup_backup_20251219_132320/QUICK-START.md"
+    },
+    {
+      "path": "c:\\Users\\chvad\\OneDrive\\Desktop\\Dineyy\\Dine-Dash\\README-SQLITE.md",
+      "sizeBytes": 4174,
+      "backupPath": "cleanup_backup_20251219_132320/README-SQLITE.md"
+    },
+    {
+      "path": "c:\\Users\\chvad\\OneDrive\\Desktop\\Dineyy\\Dine-Dash\\SQLITE_SETUP.md",
+      "sizeBytes": 3506,
+      "backupPath": "cleanup_backup_20251219_132320/SQLITE_SETUP.md"
+    },
+    {
+      "path": "c:\\Users\\chvad\\OneDrive\\Desktop\\Dineyy\\Dine-Dash\\SUCCESS.md",
+      "sizeBytes": 1487,
+      "backupPath": "cleanup_backup_20251219_132320/SUCCESS.md"
+    },
+    {
+      "path": "c:\\Users\\chvad\\OneDrive\\Desktop\\Dineyy\\Dine-Dash\\design_guidelines.md",
+      "sizeBytes": 5299,
+      "backupPath": "cleanup_backup_20251219_132320/design_guidelines.md"
+    },
+    {
+      "path": "c:\\Users\\chvad\\OneDrive\\Desktop\\Dineyy\\Dine-Dash\\test-order.json",
+      "sizeBytes": 529,
+      "backupPath": "cleanup_backup_20251219_132320/test-order.json"
+    },
+    {
+      "path": "c:\\Users\\chvad\\OneDrive\\Desktop\\Dineyy\\Dine-Dash\\.replit",
+      "sizeBytes": 781,
+      "backupPath": "cleanup_backup_20251219_132320/.replit"
+    },
+    {
+      "path": "c:\\Users\\chvad\\OneDrive\\Desktop\\Dineyy\\Dine-Dash\\client\\src\\main.tsx",
+      "sizeBytes": 157,
+      "backupPath": "cleanup_backup_20251219_132320/main.tsx"
+    },
+    {
+      "path": "c:\\Users\\chvad\\OneDrive\\Desktop\\Dineyy\\Dine-Dash\\client\\src\\App.tsx",
+      "sizeBytes": 1710,
+      "backupPath": "cleanup_backup_20251219_132320/App.tsx"
+    }
+  ],
+  "totalBytesReclaimed": 373015
+}
