@@ -1,11 +1,54 @@
+import { useState } from "react";
 import { useLocation } from "wouter";
 import { UtensilsCrossed, QrCode, ArrowRight, Clock, Star, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
+import { useQuery } from "@tanstack/react-query";
+import { fetchTables } from "@/lib/dataClient";
+import { useSession, generateSessionId } from "@/lib/session-context";
 import { motion } from "framer-motion";
 
 export default function HomePage() {
   const [, navigate] = useLocation();
+  const { toast } = useToast();
+  const { setTableInfo } = useSession();
+  const [open, setOpen] = useState(false);
+  const [selected, setSelected] = useState(null);
+
+  const { data: tables = [] } = useQuery({
+    queryKey: ["tables-home"],
+    queryFn: fetchTables,
+  });
+
+  const availableTableNumbers = tables
+    .filter((t) => t.status === "available" || t.status === "occupied" || t.status === "reserved")
+    .map((t) => t.tableNumber)
+    .sort((a, b) => a - b);
+
+  const handleViewMenu = () => {
+    setSelected(null);
+    setOpen(true);
+  };
+
+  const handleConfirm = () => {
+    if (!selected) {
+      toast({ title: "Please select a table", variant: "destructive" });
+      return;
+    }
+    const tableNum = parseInt(selected, 10);
+    const tbl = tables.find((t) => t.tableNumber === tableNum);
+    if (!tbl) {
+      toast({ title: "Invalid table number", variant: "destructive" });
+      return;
+    }
+    const sessionId = generateSessionId();
+    setTableInfo(tableNum, tbl.id, sessionId);
+    setOpen(false);
+    navigate(`/menu?table=${tableNum}&id=${tbl.id}`);
+  };
 
   const features = [
     { icon: QrCode, title: "Scan & Order", description: "Scan the QR code on your table to access the digital menu instantly" },
@@ -28,7 +71,7 @@ export default function HomePage() {
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.5 }} className="flex flex-col sm:flex-row gap-4 mb-12">
-          <Button size="lg" onClick={() => navigate("/menu")} className="gap-2" data-testid="button-view-menu">
+          <Button size="lg" onClick={handleViewMenu} className="gap-2" data-testid="button-view-menu">
             View Menu
             <ArrowRight className="w-4 h-4" />
           </Button>
@@ -36,6 +79,42 @@ export default function HomePage() {
             Staff Login
           </Button>
         </motion.div>
+
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogContent aria-label="Select Your Table Number">
+            <DialogHeader>
+              <DialogTitle>Select Your Table Number</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Select value={selected ?? undefined} onValueChange={setSelected}>
+                  <SelectTrigger className="w-full" aria-label="Table Number">
+                    <SelectValue placeholder="Choose a table" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableTableNumbers.length === 0 ? (
+                      <SelectItem value="none" disabled>No tables available</SelectItem>
+                    ) : (
+                      availableTableNumbers.map((num) => (
+                        <SelectItem key={num} value={String(num)}>
+                          Table {num}
+                        </SelectItem>
+                      ))
+                    )}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <DialogFooter className="gap-2">
+              <Button variant="outline" onClick={() => setOpen(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleConfirm} disabled={!selected}>
+                Confirm
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4, duration: 0.5 }} className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl w-full">
           {features.map((feature, index) => (
@@ -60,4 +139,3 @@ export default function HomePage() {
     </div>
   );
 }
-
