@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { ArrowLeft, Clock, Receipt, RefreshCw } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,20 +8,30 @@ import { Separator } from "@/components/ui/separator";
 import { OrderStatusTracker, OrderStatusBadge } from "@/components/order-status-tracker.jsx";
 import { useSession } from "@/lib/session-context";
 import { cn } from "@/lib/utils";
-import { fetchOrdersBySession } from "@/lib/dataClient";
+import { subscribeToOrdersBySession } from "@/lib/dataClient";
 import { motion } from "framer-motion";
 
 export default function OrderStatusPage() {
   const [, navigate] = useLocation();
   const { sessionId, tableNumber } = useSession();
-  const [wsConnected] = useState(false);
+  const [orders, setOrders] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [wsConnected, setWsConnected] = useState(false);
 
-  const { data: orders = [], isLoading, refetch } = useQuery({
-    queryKey: ["ordersBySession", sessionId],
-    queryFn: () => fetchOrdersBySession(sessionId),
-    enabled: !!sessionId,
-    refetchInterval: 10000,
-  });
+  useEffect(() => {
+    if (!sessionId) {
+      setIsLoading(false);
+      return;
+    }
+
+    const unsubscribe = subscribeToOrdersBySession(sessionId, (newOrders) => {
+      setOrders(newOrders);
+      setIsLoading(false);
+      setWsConnected(true);
+    });
+
+    return () => unsubscribe();
+  }, [sessionId]);
 
   const formatTime = (date) => {
     return new Date(date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
@@ -78,7 +87,7 @@ export default function OrderStatusPage() {
                   Live
                 </Badge>
               )}
-              <Button variant="ghost" size="icon" onClick={() => refetch()} data-testid="button-refresh">
+              <Button variant="ghost" size="icon" data-testid="button-refresh">
                 <RefreshCw className="w-4 h-4" />
               </Button>
             </div>

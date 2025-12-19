@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import {
   LayoutDashboard,
@@ -39,7 +39,7 @@ import { OrderStatusBadge } from "@/components/order-status-tracker.jsx";
 import { useSession } from "@/lib/session-context";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-import { fetchOrders, updateOrderStatus } from "@/lib/dataClient";
+import { updateOrderStatus, subscribeToOrders } from "@/lib/dataClient";
 import { motion, AnimatePresence } from "framer-motion";
 
 const navItems = [
@@ -116,25 +116,27 @@ export default function AdminOrdersPage() {
   const [, navigate] = useLocation();
   const { isAdmin } = useSession();
   const { toast } = useToast();
-  const [wsConnected] = useState(false);
+  const [orders, setOrders] = useState([]);
+  const [wsConnected, setWsConnected] = useState(false);
   const [statusFilter, setStatusFilter] = useState("all");
 
   useEffect(() => {
     if (!isAdmin) {
       navigate("/admin/login");
+      return;
     }
-  }, [isAdmin, navigate]);
 
-  const { data: orders = [], refetch } = useQuery({
-    queryKey: ["orders"],
-    queryFn: fetchOrders,
-    refetchInterval: 10000,
-  });
+    const unsubscribe = subscribeToOrders((newOrders) => {
+      setOrders(newOrders);
+      setWsConnected(true);
+    });
+
+    return () => unsubscribe();
+  }, [isAdmin, navigate]);
 
   const updateStatusMutation = useMutation({
     mutationFn: async ({ orderId, status }) => updateOrderStatus(orderId, status),
     onSuccess: () => {
-      refetch();
       toast({ title: "Order status updated" });
     },
     onError: (error) => {
@@ -201,7 +203,7 @@ export default function AdminOrdersPage() {
                   ))}
                 </DropdownMenuContent>
               </DropdownMenu>
-              <Button variant="ghost" size="icon" onClick={() => refetch()} data-testid="button-refresh">
+              <Button variant="ghost" size="icon" data-testid="button-refresh">
                 <RefreshCw className="w-4 h-4" />
               </Button>
             </div>

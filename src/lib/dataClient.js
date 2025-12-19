@@ -1,9 +1,21 @@
+import { db } from "./firebase";
+import { 
+  collection, 
+  addDoc, 
+  updateDoc, 
+  doc, 
+  onSnapshot, 
+  query, 
+  orderBy, 
+  where, 
+  serverTimestamp 
+} from "firebase/firestore";
+
 const STORAGE_KEYS = {
   categories: "dd_categories",
   menuItems: "dd_menuItems",
   addons: "dd_addons",
   tables: "dd_tables",
-  orders: "dd_orders",
   adminUsers: "dd_adminUsers",
 };
 
@@ -29,7 +41,6 @@ export async function initSeeds() {
     seedFromJson(STORAGE_KEYS.menuItems, "/data/menu-items.json"),
     seedFromJson(STORAGE_KEYS.addons, "/data/addons.json"),
     seedFromJson(STORAGE_KEYS.tables, "/data/tables.json"),
-    seedFromJson(STORAGE_KEYS.orders, "/data/orders.json"),
     seedFromJson(STORAGE_KEYS.adminUsers, "/data/admin-users.json"),
   ]);
 }
@@ -56,11 +67,38 @@ export async function fetchAddons() {
 export async function fetchTables() {
   return read(STORAGE_KEYS.tables);
 }
-export async function fetchOrders() {
-  return read(STORAGE_KEYS.orders);
+
+// Real-time Subscriptions
+export function subscribeToOrders(callback) {
+  const q = query(collection(db, "orders"), orderBy("createdAt", "desc"));
+  return onSnapshot(q, (snapshot) => {
+    const orders = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+      createdAt: doc.data().createdAt?.toDate ? doc.data().createdAt.toDate().toISOString() : new Date().toISOString()
+    }));
+    callback(orders);
+  }, (error) => {
+    console.error("Error subscribing to orders:", error);
+  });
 }
-export async function fetchOrdersBySession(sessionId) {
-  return read(STORAGE_KEYS.orders).filter((o) => o.sessionId === sessionId);
+
+export function subscribeToOrdersBySession(sessionId, callback) {
+  const q = query(
+    collection(db, "orders"), 
+    where("sessionId", "==", sessionId),
+    orderBy("createdAt", "desc")
+  );
+  return onSnapshot(q, (snapshot) => {
+    const orders = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+      createdAt: doc.data().createdAt?.toDate ? doc.data().createdAt.toDate().toISOString() : new Date().toISOString()
+    }));
+    callback(orders);
+  }, (error) => {
+    console.error("Error subscribing to session orders:", error);
+  });
 }
 
 // Admin auth
@@ -104,38 +142,40 @@ export async function deleteTable(tableId) {
 
 // Orders mutations
 export async function createOrder(orderData) {
-  const orders = read(STORAGE_KEYS.orders);
-  const id = `ord_${crypto.randomUUID ? crypto.randomUUID() : Date.now()}`;
-  const now = new Date().toISOString();
-  const order = {
-    id,
-    status: "received",
-    paymentStatus: "pending",
-    createdAt: now,
-    updatedAt: now,
-    ...orderData,
-    items: orderData.items.map((i) => ({
-      id: `item_${crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2)}`,
-      orderId: id,
-      ...i,
-    })),
-  };
-  orders.unshift(order);
-  write(STORAGE_KEYS.orders, orders);
-  return order;
+  try {
+    const docRef = await addDoc(collection(db, "orders"), {
+      ...orderData,
+      status: "received",
+      paymentStatus: "pending",
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+      items: orderData.items.map((i) => ({
+        ...i,
+        id: i.id || `item_${Date.now()}_${Math.random().toString(36).slice(2)}`,
+      })),
+    });
+    return { id: docRef.id, ...orderData };
+  } catch (error) {
+    console.error("Error creating order:", error);
+    throw error;
+  }
 }
 
 export async function updateOrderStatus(orderId, status) {
-  const orders = read(STORAGE_KEYS.orders);
-  const idx = orders.findIndex((o) => o.id === orderId);
-  if (idx === -1) throw new Error("Order not found");
-  orders[idx] = {
-    ...orders[idx],
-    status,
-    updatedAt: new Date().toISOString(),
-    paymentStatus: status === "served" ? "paid" : orders[idx].paymentStatus,
-  };
-  write(STORAGE_KEYS.orders, orders);
-  return orders[idx];
+  try {
+    const orderRef = doc(db, "orders", orderId);
+    const updates = {
+      status,
+      updatedAt: serverTimestamp(),
+    };
+    if (status === "served") {
+      updates.paymentStatus = "paid";
+    }
+    await updateDoc(orderRef, updates);
+    return { id: orderId, ...updates };
+  } catch (error) {
+    console.error("Error updating order status:", error);
+    throw error;
+  }
 }
 

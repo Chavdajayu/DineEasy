@@ -32,7 +32,7 @@ import {
 import { OrderStatusBadge } from "@/components/order-status-tracker.jsx";
 import { useSession } from "@/lib/session-context";
 import { cn } from "@/lib/utils";
-import { fetchOrders, fetchTables } from "@/lib/dataClient";
+import { subscribeToOrders, fetchTables } from "@/lib/dataClient";
 import { motion } from "framer-motion";
 
 const navItems = [
@@ -97,19 +97,22 @@ function AdminSidebar() {
 export default function AdminDashboardPage() {
   const [, navigate] = useLocation();
   const { isAdmin } = useSession();
-  const [wsConnected] = useState(false);
+  const [orders, setOrders] = useState([]);
+  const [wsConnected, setWsConnected] = useState(false);
 
   useEffect(() => {
     if (!isAdmin) {
       navigate("/admin/login");
+      return;
     }
-  }, [isAdmin, navigate]);
 
-  const { data: orders = [], refetch: refetchOrders } = useQuery({
-    queryKey: ["orders"],
-    queryFn: fetchOrders,
-    refetchInterval: 10000,
-  });
+    const unsubscribe = subscribeToOrders((newOrders) => {
+      setOrders(newOrders);
+      setWsConnected(true);
+    });
+
+    return () => unsubscribe();
+  }, [isAdmin, navigate]);
 
   const { data: tables = [] } = useQuery({
     queryKey: ["tables"],
@@ -158,7 +161,7 @@ export default function AdminDashboardPage() {
                   Live Updates
                 </Badge>
               )}
-              <Button variant="ghost" size="icon" onClick={() => refetchOrders()} data-testid="button-refresh">
+              <Button variant="ghost" size="icon" data-testid="button-refresh">
                 <RefreshCw className="w-4 h-4" />
               </Button>
             </div>
