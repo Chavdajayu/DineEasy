@@ -1,0 +1,6 @@
+[
+  { "id": "cat_starters", "name": "Starters", "description": "Begin your meal", "sortOrder": 1, "isActive": true },
+  { "id": "cat_mains", "name": "Main Course", "description": "Hearty plates", "sortOrder": 2, "isActive": true },
+  { "id": "cat_desserts", "name": "Desserts", "description": "Sweet treats", "sortOrder": 3, "isActive": true },
+  { "id": "cat_drinks", "name": "Drinks", "description": "Beverages", "sortOrder": 4, "isActive": true }
+]

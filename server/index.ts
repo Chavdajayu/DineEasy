@@ -2,6 +2,8 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
+import { initializeDatabase } from "./db";
+import { seedDatabase } from "./seed";
 
 const app = express();
 const httpServer = createServer(app);
@@ -60,6 +62,16 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // Initialize SQLite database
+  await initializeDatabase();
+  
+  // Auto-seed database on first run
+  try {
+    await seedDatabase();
+  } catch (error) {
+    console.log("Database already seeded or seed failed:", error);
+  }
+  
   await registerRoutes(httpServer, app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
@@ -88,11 +100,10 @@ app.use((req, res, next) => {
   httpServer.listen(
     {
       port,
-      host: "0.0.0.0",
-      reusePort: true,
+      host: "localhost",
     },
     () => {
-      log(`serving on port ${port}`);
+      log(`serving on http://localhost:${port}`);
     },
   );
 })();

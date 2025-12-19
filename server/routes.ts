@@ -5,6 +5,7 @@ import { storage } from "./storage";
 import { insertTableSchema, insertCategorySchema, insertMenuItemSchema, insertAddonSchema, insertOrderSchema, insertOrderItemSchema } from "@shared/schema";
 import QRCode from "qrcode";
 import { z } from "zod";
+import { seedDatabase } from "./seed";
 
 // WebSocket clients map
 const wsClients = new Map<string, Set<WebSocket>>();
@@ -323,8 +324,16 @@ export async function registerRoutes(
     try {
       const { items, ...orderData } = req.body;
 
+      // Ensure numeric fields are numbers
+      const numericOrderData = {
+        ...orderData,
+        subtotal: typeof orderData.subtotal === 'string' ? parseFloat(orderData.subtotal) : orderData.subtotal,
+        tax: typeof orderData.tax === 'string' ? parseFloat(orderData.tax) : orderData.tax,
+        total: typeof orderData.total === 'string' ? parseFloat(orderData.total) : orderData.total,
+      };
+
       // Validate order data
-      const validatedOrder = insertOrderSchema.parse(orderData);
+      const validatedOrder = insertOrderSchema.parse(numericOrderData);
 
       // Create the order
       const order = await storage.createOrder(validatedOrder);
@@ -332,10 +341,14 @@ export async function registerRoutes(
       // Create order items
       const orderItems = await Promise.all(
         items.map((item: any) => {
-          const validatedItem = insertOrderItemSchema.parse({
+          const numericItem = {
             ...item,
+            unitPrice: typeof item.unitPrice === 'string' ? parseFloat(item.unitPrice) : item.unitPrice,
+            totalPrice: typeof item.totalPrice === 'string' ? parseFloat(item.totalPrice) : item.totalPrice,
             orderId: order.id,
-          });
+          };
+          
+          const validatedItem = insertOrderItemSchema.parse(numericItem);
           return storage.createOrderItem(validatedItem);
         })
       );
@@ -353,8 +366,14 @@ export async function registerRoutes(
 
       res.status(201).json(orderWithItems);
     } catch (error) {
-      console.error("Create order error:", error);
+      console.error("Create order error:", (error as Error).message);
       if (error instanceof z.ZodError) {
+        // Log details safely
+        try {
+           console.error("Zod validation errors:", JSON.stringify(error.errors, null, 2));
+        } catch (e) {
+           console.error("Could not stringify Zod errors");
+        }
         return res.status(400).json({ message: "Invalid order data", errors: error.errors });
       }
       res.status(500).json({ message: "Failed to create order" });
@@ -426,155 +445,23 @@ export async function registerRoutes(
   });
 
   // ============ Seed Data Route ============
-  app.post("/api/seed", async (_req, res) => {
+  app.post("/api/seed", async (req, res) => {
     try {
-      // Check if data already exists
-      const existingCategories = await storage.getCategories();
-      if (existingCategories.length > 0) {
-        return res.json({ message: "Data already seeded" });
-      }
-
-      // Create categories
-      const appetizers = await storage.createCategory({ name: "Appetizers", description: "Start your meal right", sortOrder: 1, isActive: true });
-      const mains = await storage.createCategory({ name: "Main Course", description: "Delicious main dishes", sortOrder: 2, isActive: true });
-      const desserts = await storage.createCategory({ name: "Desserts", description: "Sweet endings", sortOrder: 3, isActive: true });
-      const drinks = await storage.createCategory({ name: "Beverages", description: "Refreshing drinks", sortOrder: 4, isActive: true });
-
-      // Create menu items
-      const springRolls = await storage.createMenuItem({
-        categoryId: appetizers.id,
-        name: "Crispy Spring Rolls",
-        description: "Golden fried vegetable spring rolls served with sweet chili sauce",
-        price: "8.99",
-        isVegetarian: true,
-        isSpicy: false,
-        isAvailable: true,
-        preparationTime: 10,
-      });
-
-      const chickenWings = await storage.createMenuItem({
-        categoryId: appetizers.id,
-        name: "Buffalo Chicken Wings",
-        description: "Spicy chicken wings with blue cheese dip",
-        price: "12.99",
-        isVegetarian: false,
-        isSpicy: true,
-        isAvailable: true,
-        preparationTime: 15,
-      });
-
-      const grilledSalmon = await storage.createMenuItem({
-        categoryId: mains.id,
-        name: "Grilled Atlantic Salmon",
-        description: "Fresh salmon fillet with lemon butter sauce and seasonal vegetables",
-        price: "24.99",
-        isVegetarian: false,
-        isSpicy: false,
-        isAvailable: true,
-        preparationTime: 25,
-      });
-
-      const veggiePasta = await storage.createMenuItem({
-        categoryId: mains.id,
-        name: "Garden Veggie Pasta",
-        description: "Penne pasta with roasted vegetables in marinara sauce",
-        price: "16.99",
-        isVegetarian: true,
-        isVegan: true,
-        isSpicy: false,
-        isAvailable: true,
-        preparationTime: 18,
-      });
-
-      const steakRibeye = await storage.createMenuItem({
-        categoryId: mains.id,
-        name: "Prime Ribeye Steak",
-        description: "12oz ribeye cooked to perfection with garlic mashed potatoes",
-        price: "34.99",
-        isVegetarian: false,
-        isSpicy: false,
-        isAvailable: true,
-        preparationTime: 30,
-      });
-
-      const spicyCurry = await storage.createMenuItem({
-        categoryId: mains.id,
-        name: "Thai Red Curry",
-        description: "Authentic red curry with coconut milk, vegetables, and jasmine rice",
-        price: "18.99",
-        isVegetarian: true,
-        isSpicy: true,
-        isAvailable: true,
-        preparationTime: 20,
-      });
-
-      const chocolateCake = await storage.createMenuItem({
-        categoryId: desserts.id,
-        name: "Molten Chocolate Cake",
-        description: "Warm chocolate cake with a gooey center, served with vanilla ice cream",
-        price: "9.99",
-        isVegetarian: true,
-        isSpicy: false,
-        isAvailable: true,
-        preparationTime: 12,
-      });
-
-      const tiramisu = await storage.createMenuItem({
-        categoryId: desserts.id,
-        name: "Classic Tiramisu",
-        description: "Italian coffee-flavored dessert with mascarpone cream",
-        price: "8.99",
-        isVegetarian: true,
-        isSpicy: false,
-        isAvailable: true,
-        preparationTime: 5,
-      });
-
-      await storage.createMenuItem({
-        categoryId: drinks.id,
-        name: "Fresh Lemonade",
-        description: "House-made lemonade with fresh mint",
-        price: "4.99",
-        isVegetarian: true,
-        isVegan: true,
-        isSpicy: false,
-        isAvailable: true,
-        preparationTime: 3,
-      });
-
-      await storage.createMenuItem({
-        categoryId: drinks.id,
-        name: "Iced Coffee",
-        description: "Cold brewed coffee served over ice",
-        price: "5.99",
-        isVegetarian: true,
-        isVegan: true,
-        isSpicy: false,
-        isAvailable: true,
-        preparationTime: 2,
-      });
-
-      // Create addons
-      await storage.createAddon({ menuItemId: springRolls.id, name: "Extra Sauce", price: "1.00", isAvailable: true });
-      await storage.createAddon({ menuItemId: chickenWings.id, name: "Extra Blue Cheese", price: "1.50", isAvailable: true });
-      await storage.createAddon({ menuItemId: chickenWings.id, name: "Ranch Dip", price: "1.50", isAvailable: true });
-      await storage.createAddon({ menuItemId: grilledSalmon.id, name: "Extra Vegetables", price: "3.00", isAvailable: true });
-      await storage.createAddon({ menuItemId: steakRibeye.id, name: "Mushroom Sauce", price: "2.50", isAvailable: true });
-      await storage.createAddon({ menuItemId: steakRibeye.id, name: "Peppercorn Sauce", price: "2.50", isAvailable: true });
-      await storage.createAddon({ menuItemId: spicyCurry.id, name: "Extra Rice", price: "2.00", isAvailable: true });
-      await storage.createAddon({ menuItemId: chocolateCake.id, name: "Extra Ice Cream", price: "2.00", isAvailable: true });
-
-      // Create sample tables
-      for (let i = 1; i <= 8; i++) {
-        const table = await storage.createTable({ tableNumber: i, capacity: i <= 4 ? 4 : 6, status: "available" });
-        const baseUrl = `${_req.protocol}://${_req.get("host")}`;
-        const tableUrl = `${baseUrl}/menu?table=${table.tableNumber}&id=${table.id}`;
-        const qrCode = await QRCode.toDataURL(tableUrl, {
-          width: 400,
-          margin: 2,
-          color: { dark: "#1A1A1A", light: "#FFFFFF" },
-        });
-        await storage.updateTable(table.id, { qrCode });
+      await seedDatabase();
+      
+      // Generate QR codes for tables
+      const tables = await storage.getTables();
+      for (const table of tables) {
+        if (!table.qrCode) {
+          const baseUrl = `${req.protocol}://${req.get("host")}`;
+          const tableUrl = `${baseUrl}/menu?table=${table.tableNumber}&id=${table.id}`;
+          const qrCode = await QRCode.toDataURL(tableUrl, {
+            width: 400,
+            margin: 2,
+            color: { dark: "#1A1A1A", light: "#FFFFFF" },
+          });
+          await storage.updateTable(table.id, { qrCode });
+        }
       }
 
       res.json({ message: "Seed data created successfully" });

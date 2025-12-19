@@ -1,11 +1,12 @@
 import { sql, relations } from "drizzle-orm";
-import { pgTable, text, varchar, integer, decimal, boolean, timestamp, jsonb } from "drizzle-orm/pg-core";
+import { sqliteTable, text, integer, real, blob } from "drizzle-orm/sqlite-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
+import { randomUUID } from "crypto";
 
 // Admin users for restaurant staff
-export const adminUsers = pgTable("admin_users", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+export const adminUsers = sqliteTable("admin_users", {
+  id: text("id").primaryKey().$defaultFn(() => randomUUID()),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
   name: text("name").notNull(),
@@ -23,13 +24,13 @@ export type InsertAdminUser = z.infer<typeof insertAdminUserSchema>;
 export type AdminUser = typeof adminUsers.$inferSelect;
 
 // Restaurant tables
-export const tables = pgTable("tables", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+export const tables = sqliteTable("tables", {
+  id: text("id").primaryKey().$defaultFn(() => randomUUID()),
   tableNumber: integer("table_number").notNull().unique(),
   capacity: integer("capacity").notNull().default(4),
   status: text("status").notNull().default("available"), // available, occupied, reserved
   qrCode: text("qr_code"),
-  sessionId: varchar("session_id"),
+  sessionId: text("session_id"),
 });
 
 export const insertTableSchema = createInsertSchema(tables).pick({
@@ -42,12 +43,12 @@ export type InsertTable = z.infer<typeof insertTableSchema>;
 export type Table = typeof tables.$inferSelect;
 
 // Menu categories
-export const categories = pgTable("categories", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+export const categories = sqliteTable("categories", {
+  id: text("id").primaryKey().$defaultFn(() => randomUUID()),
   name: text("name").notNull(),
   description: text("description"),
   sortOrder: integer("sort_order").notNull().default(0),
-  isActive: boolean("is_active").notNull().default(true),
+  isActive: integer("is_active", { mode: "boolean" }).notNull().default(true),
 });
 
 export const insertCategorySchema = createInsertSchema(categories).pick({
@@ -61,17 +62,17 @@ export type InsertCategory = z.infer<typeof insertCategorySchema>;
 export type Category = typeof categories.$inferSelect;
 
 // Menu items
-export const menuItems = pgTable("menu_items", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  categoryId: varchar("category_id").notNull().references(() => categories.id),
+export const menuItems = sqliteTable("menu_items", {
+  id: text("id").primaryKey().$defaultFn(() => randomUUID()),
+  categoryId: text("category_id").notNull().references(() => categories.id),
   name: text("name").notNull(),
   description: text("description"),
-  price: decimal("price", { precision: 10, scale: 2 }).notNull(),
+  price: real("price").notNull(),
   image: text("image"),
-  isVegetarian: boolean("is_vegetarian").notNull().default(false),
-  isVegan: boolean("is_vegan").notNull().default(false),
-  isSpicy: boolean("is_spicy").notNull().default(false),
-  isAvailable: boolean("is_available").notNull().default(true),
+  isVegetarian: integer("is_vegetarian", { mode: "boolean" }).notNull().default(false),
+  isVegan: integer("is_vegan", { mode: "boolean" }).notNull().default(false),
+  isSpicy: integer("is_spicy", { mode: "boolean" }).notNull().default(false),
+  isAvailable: integer("is_available", { mode: "boolean" }).notNull().default(true),
   preparationTime: integer("preparation_time").default(15), // in minutes
   calories: integer("calories"),
 });
@@ -102,12 +103,12 @@ export type InsertMenuItem = z.infer<typeof insertMenuItemSchema>;
 export type MenuItem = typeof menuItems.$inferSelect;
 
 // Add-ons for menu items
-export const addons = pgTable("addons", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  menuItemId: varchar("menu_item_id").notNull().references(() => menuItems.id),
+export const addons = sqliteTable("addons", {
+  id: text("id").primaryKey().$defaultFn(() => randomUUID()),
+  menuItemId: text("menu_item_id").notNull().references(() => menuItems.id),
   name: text("name").notNull(),
-  price: decimal("price", { precision: 10, scale: 2 }).notNull(),
-  isAvailable: boolean("is_available").notNull().default(true),
+  price: real("price").notNull(),
+  isAvailable: integer("is_available", { mode: "boolean" }).notNull().default(true),
 });
 
 export const addonsRelations = relations(addons, ({ one }) => ({
@@ -132,21 +133,21 @@ export const orderStatuses = ["received", "preparing", "cooking", "ready", "serv
 export type OrderStatus = typeof orderStatuses[number];
 
 // Orders
-export const orders = pgTable("orders", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  tableId: varchar("table_id").notNull().references(() => tables.id),
+export const orders = sqliteTable("orders", {
+  id: text("id").primaryKey().$defaultFn(() => randomUUID()),
+  tableId: text("table_id").notNull().references(() => tables.id),
   tableNumber: integer("table_number").notNull(),
-  sessionId: varchar("session_id").notNull(),
+  sessionId: text("session_id").notNull(),
   status: text("status").notNull().default("received"),
-  subtotal: decimal("subtotal", { precision: 10, scale: 2 }).notNull(),
-  tax: decimal("tax", { precision: 10, scale: 2 }).notNull(),
-  total: decimal("total", { precision: 10, scale: 2 }).notNull(),
+  subtotal: real("subtotal").notNull(),
+  tax: real("tax").notNull(),
+  total: real("total").notNull(),
   specialInstructions: text("special_instructions"),
   paymentStatus: text("payment_status").notNull().default("pending"), // pending, paid, failed
   paymentMethod: text("payment_method"),
   stripePaymentIntentId: text("stripe_payment_intent_id"),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  createdAt: text("created_at").notNull().$defaultFn(() => new Date().toISOString()),
+  updatedAt: text("updated_at").notNull().$defaultFn(() => new Date().toISOString()),
 });
 
 export const ordersRelations = relations(orders, ({ one, many }) => ({
@@ -171,16 +172,16 @@ export type InsertOrder = z.infer<typeof insertOrderSchema>;
 export type Order = typeof orders.$inferSelect;
 
 // Order items
-export const orderItems = pgTable("order_items", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  orderId: varchar("order_id").notNull().references(() => orders.id),
-  menuItemId: varchar("menu_item_id").notNull().references(() => menuItems.id),
+export const orderItems = sqliteTable("order_items", {
+  id: text("id").primaryKey().$defaultFn(() => randomUUID()),
+  orderId: text("order_id").notNull().references(() => orders.id),
+  menuItemId: text("menu_item_id").notNull().references(() => menuItems.id),
   menuItemName: text("menu_item_name").notNull(),
   quantity: integer("quantity").notNull().default(1),
-  unitPrice: decimal("unit_price", { precision: 10, scale: 2 }).notNull(),
-  totalPrice: decimal("total_price", { precision: 10, scale: 2 }).notNull(),
+  unitPrice: real("unit_price").notNull(),
+  totalPrice: real("total_price").notNull(),
   spiceLevel: integer("spice_level").default(0), // 0-4
-  selectedAddons: jsonb("selected_addons").$type<{ id: string; name: string; price: string }[]>(),
+  selectedAddons: text("selected_addons", { mode: "json" }).$type<{ id: string; name: string; price: string }[]>(),
   specialInstructions: text("special_instructions"),
 });
 

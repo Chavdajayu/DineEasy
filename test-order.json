@@ -1,0 +1,22 @@
+{
+  "tableId": "8b572359-d3a8-48fe-b57f-11b5d2c7eede",
+  "tableNumber": 1,
+  "sessionId": "session-123",
+  "subtotal": "8.99",
+  "tax": "0.90",
+  "total": "9.89",
+  "specialInstructions": "Test order",
+  "paymentMethod": "card",
+  "items": [
+    {
+       "menuItemId": "3f8e3e3b-ac63-4410-849a-f56c89a192a3",
+       "menuItemName": "Crispy Spring Rolls",
+       "quantity": 1,
+       "unitPrice": 8.99,
+       "totalPrice": "8.99",
+       "spiceLevel": 0,
+       "selectedAddons": [],
+       "specialInstructions": ""
+    }
+  ]
+}
