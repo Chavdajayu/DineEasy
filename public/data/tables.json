@@ -1,0 +1,5 @@
+[
+  { "id": "tbl_1", "tableNumber": 1, "capacity": 4, "status": "available", "qrCode": null, "sessionId": null },
+  { "id": "tbl_2", "tableNumber": 2, "capacity": 4, "status": "available", "qrCode": null, "sessionId": null },
+  { "id": "tbl_3", "tableNumber": 3, "capacity": 6, "status": "available", "qrCode": null, "sessionId": null }
+]

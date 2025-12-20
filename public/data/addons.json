@@ -1,0 +1,6 @@
+[
+  { "id": "addon_extra_cheese", "menuItemId": "item_margherita", "name": "Extra Cheese", "price": "1.50", "isAvailable": true },
+  { "id": "addon_olives", "menuItemId": "item_margherita", "name": "Olives", "price": "1.00", "isAvailable": true },
+  { "id": "addon_garlic_bread", "menuItemId": "item_pasta_arrabbiata", "name": "Garlic Bread", "price": "2.99", "isAvailable": true },
+  { "id": "addon_ranch", "menuItemId": "item_spicy_wings", "name": "Ranch Dip", "price": "0.99", "isAvailable": true }
+]
