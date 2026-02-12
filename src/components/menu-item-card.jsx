@@ -7,32 +7,38 @@ import { cn } from "@/lib/utils";
 import { OrderCustomizationModal } from "./order-customization-modal.jsx";
 import { motion } from "framer-motion";
 
-export function MenuItemCard({ item, addons = [], onAddToCart }) {
+export default function MenuItemCard({ item, addons = [], onAddToCart }) {
   const [showCustomization, setShowCustomization] = useState(false);
   const [imageError, setImageError] = useState(false);
 
   const handleQuickAdd = () => {
-    const basePrice = parseFloat(item.price);
+    const basePrice = parseFloat(item.price || 0);
     const cartItem = {
+      name: item.name, // Add name for easier display in cart
       menuItem: item,
       quantity: 1,
       spiceLevel: 0,
       selectedAddons: [],
       specialInstructions: "",
       totalPrice: basePrice,
+      price: basePrice, // Add price for display
     };
-    onAddToCart(cartItem);
+    if (typeof onAddToCart === 'function') {
+      onAddToCart(cartItem);
+    }
   };
 
   const handleCustomizedAdd = (cartItem) => {
-    onAddToCart(cartItem);
+    if (typeof onAddToCart === 'function') {
+      onAddToCart(cartItem);
+    }
     setShowCustomization(false);
   };
 
   return (
     <>
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
-        <Card className={cn("glass-card overflow-visible transition-all duration-300", !item.isAvailable && "opacity-50")}>
+        <Card className={cn("glass-card overflow-visible transition-all duration-300", !item.available && "opacity-50")}>
           <CardContent className="p-0">
             <div className="flex gap-4 p-4">
               <div className="relative w-24 h-24 rounded-lg overflow-hidden shrink-0 bg-muted">
@@ -50,7 +56,7 @@ export function MenuItemCard({ item, addons = [], onAddToCart }) {
                     </span>
                   </div>
                 )}
-                {!item.isAvailable && (
+                {!item.available && (
                   <div className="absolute inset-0 bg-background/80 flex items-center justify-center">
                     <span className="text-xs font-medium text-muted-foreground">Unavailable</span>
                   </div>
@@ -60,7 +66,7 @@ export function MenuItemCard({ item, addons = [], onAddToCart }) {
               <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between gap-2 mb-1">
                   <h3 className="font-semibold text-foreground truncate">{item.name}</h3>
-                  <span className="font-bold text-primary shrink-0">${parseFloat(item.price).toFixed(2)}</span>
+                  <span className="font-bold text-primary shrink-0">₹{parseFloat(item.price).toFixed(0)}</span>
                 </div>
 
                 {item.description && <p className="text-sm text-muted-foreground line-clamp-2 mb-2">{item.description}</p>}
@@ -78,10 +84,10 @@ export function MenuItemCard({ item, addons = [], onAddToCart }) {
                       Vegan
                     </Badge>
                   )}
-                  {item.isSpicy && (
+                  {item.spiceLevel !== "none" && (
                     <Badge variant="secondary" className="text-xs bg-red-500/10 text-red-400 border-red-500/20">
                       <Flame className="w-3 h-3 mr-1" />
-                      Spicy
+                      {item.spiceLevel}
                     </Badge>
                   )}
                   {item.preparationTime && (
@@ -97,13 +103,13 @@ export function MenuItemCard({ item, addons = [], onAddToCart }) {
                     size="sm"
                     variant="outline"
                     onClick={() => setShowCustomization(true)}
-                    disabled={!item.isAvailable}
+                    disabled={!item.available}
                     className="flex-1"
                     data-testid={`button-customize-${item.id}`}
                   >
                     Customize
                   </Button>
-                  <Button size="icon" onClick={handleQuickAdd} disabled={!item.isAvailable} className="shrink-0" data-testid={`button-add-${item.id}`}>
+                  <Button size="icon" onClick={handleQuickAdd} disabled={!item.available} className="shrink-0" data-testid={`button-add-${item.id}`}>
                     <Plus className="w-4 h-4" />
                   </Button>
                 </div>

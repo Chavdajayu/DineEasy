@@ -4,11 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { useCart } from "@/lib/cart-context.jsx";
+ import { useCart } from "@/providers/CartProvider";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 
-export function CartDrawer({ onCheckout }) {
+export default function CartDrawer({ onCheckout }) {
   const { items, removeItem, updateQuantity, totalItems, subtotal, tax, total, clearCart } = useCart();
 
   return (
@@ -66,8 +66,8 @@ export function CartDrawer({ onCheckout }) {
                       </div>
 
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify_between gap-2">
-                          <h4 className="font_medium text_sm truncate">{item.menuItem.name}</h4>
+                        <div className="flex items-start justify-between gap-2">
+                          <h4 className="font-medium text-sm truncate">{item.menuItem.name}</h4>
                           <Button size="icon" variant="ghost" className="h-6 w-6 text-muted-foreground" onClick={() => removeItem(index)} data-testid={`button-remove-${index}`}>
                             <Trash2 className="w-3 h-3" />
                           </Button>
@@ -89,7 +89,7 @@ export function CartDrawer({ onCheckout }) {
                               <Plus className="w-3 h-3" />
                             </Button>
                           </div>
-                          <span className="font-semibold text-primary">${item.totalPrice.toFixed(2)}</span>
+                          <span className="font-semibold text-primary">₹{Number(item.totalPrice || 0).toFixed(2)}</span>
                         </div>
                       </div>
                     </div>
@@ -101,16 +101,16 @@ export function CartDrawer({ onCheckout }) {
             <div className="border-t border-border pt-4 mt-4 space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Subtotal</span>
-                <span>${subtotal.toFixed(2)}</span>
+                <span>₹{Number(subtotal || 0).toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Tax (10%)</span>
-                <span>${tax.toFixed(2)}</span>
+                <span className="text-muted-foreground">Tax (5%)</span>
+                <span>₹{Number(tax || 0).toFixed(2)}</span>
               </div>
               <Separator />
               <div className="flex justify-between font-semibold text-lg">
                 <span>Total</span>
-                <span className="text-primary" data-testid="text-cart-total">${total.toFixed(2)}</span>
+                <span className="text-primary" data-testid="text-cart-total">₹{Number(total || 0).toFixed(2)}</span>
               </div>
             </div>
 
@@ -141,9 +141,8 @@ export function FloatingCartButton({ onClick }) {
             {totalItems}
           </Badge>
         </div>
-        <span>View Cart - ${total.toFixed(2)}</span>
+        <span>View Cart - ₹{Number(total || 0).toFixed(2)}</span>
       </Button>
     </motion.div>
   );
 }
-

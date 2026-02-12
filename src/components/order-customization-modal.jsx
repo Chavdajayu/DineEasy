@@ -30,8 +30,8 @@ export function OrderCustomizationModal({ item, addons, open, onClose, onAdd }) 
     }
   }, [open]);
 
-  const basePrice = parseFloat(item.price);
-  const addonsPrice = selectedAddons.reduce((sum, addon) => sum + parseFloat(addon.price), 0);
+  const basePrice = parseFloat(item.price || 0);
+  const addonsPrice = (selectedAddons || []).reduce((sum, addon) => sum + parseFloat(addon.price || 0), 0);
   const totalPrice = (basePrice + addonsPrice) * quantity;
 
   const handleAddonToggle = (addon) => {
@@ -46,12 +46,14 @@ export function OrderCustomizationModal({ item, addons, open, onClose, onAdd }) 
 
   const handleAdd = () => {
     const cartItem = {
+      name: item.name,
       menuItem: item,
       quantity,
       spiceLevel,
       selectedAddons,
       specialInstructions,
       totalPrice,
+      price: basePrice,
     };
     onAdd(cartItem);
   };
